@@ -8,7 +8,68 @@ This document is meant to provide a tool for you to demonstrate the design proce
 
 Place your class diagram below. Make sure you check the fil in the browser on github.com to make sure it is rendering correctly. If it is not, you will need to fix it. As a reminder, here is a link to tools that can help you create a class diagram: [Class Resources: Class Design Tools](https://github.com/CS5004-khoury-lionelle/Resources?tab=readme-ov-file#uml-design-tools)
 
+```mermaid
+classDiagram
+direction TB
 
+    PayrollGenerator -- Arguments : "inner class"
+    PayrollGenerator ..> FileUtil : uses
+    PayrollGenerator ..> Builder : uses
+
+class IEmployee {
+<<interface>>
++ getName(): String
++ getID(): String
++ getPayRate(): double
++ getEmployeeType(): String
++ getYTDEarnings(): double
++ getYTDTaxesPaid(): double
++ getPretaxDeductions(): double
++ runPayroll(hoursWorked: double): IPayStub
++ toCSV(): String
+}
+
+class IPayStub {
+<<interface>>
++ getPay(): double
++ getTaxesPaid(): double
++ toCSV(): String
+}
+
+class ITimeCard {
+<<interface>>
++ getEmployeeID(): String
++ getHoursWorked(): double
+}
+
+class Builder {
++ buildEmployeeFromCSV(csv: String): IEmployee
++ buildTimeCardFromCSV(csv: String): ITimeCard
+}
+
+class FileUtil {
++ EMPLOYEE_HEADER: String
++ PAY_STUB_HEADER: String
++ readFileToList(file: String): List~String~
++ writeFile(outFile: String, lines: List~String~): void
++ writeFile(outFile: String, lines: List~String~, backup: boolean): void
+}
+
+class PayrollGenerator {
++ main(args: String[]): void
+}
+
+class Arguments {
+- employeeFile: String
+- payrollFile: String
+- timeCards: String
++ getEmployeeFile(): String
++ getPayrollFile(): String
++ getTimeCards(): String
++ printHelp(): void
++ process(args: String[]): Arguments
+}
+```
 
 
 
