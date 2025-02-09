@@ -100,7 +100,132 @@ Go through your completed code, and update your class diagram to reflect the fin
 > [!WARNING]
 > If you resubmit your assignment for manual grading, this is a section that often needs updating. You should double check with every resubmit to make sure it is up to date.
 
+```mermaid
+classDiagram
+    direction TB
+    PayrollGenerator -- Arguments: "inner class"
+    PayrollGenerator ..> FileUtil: uses
+    PayrollGenerator ..> Builder: uses
+    IEmployee <|.. Employee : implements
+    IPayStub <|.. PayStub : implements
+    ITimeCard <|.. TimeCard : implements
 
+    Employee <|-- HourlyEmployee
+    Employee <|-- SalaryEmployee
+    Employee ..> IPayStub : uses
+    Builder ..> IEmployee : uses
+    Builder ..> ITimeCard : uses
+
+    class IEmployee {
+        <<interface>>
+        + getName(): String
+        + getID(): String
+        + getPayRate(): double
+        + getEmployeeType(): String
+        + getYTDEarnings(): double
+        + getYTDTaxesPaid(): double
+        + getPretaxDeductions(): double
+        + runPayroll(hoursWorked: double): IPayStub
+        + toCSV(): String
+    }
+
+    class IPayStub {
+        <<interface>>
+        + getPay(): double
+        + getTaxesPaid(): double
+        + toCSV(): String
+    }
+
+    class ITimeCard {
+        <<interface>>
+        + getEmployeeID(): String
+        + getHoursWorked(): double
+    }
+
+    class Builder {
+        + buildEmployeeFromCSV(csv: String): IEmployee
+        + buildTimeCardFromCSV(csv: String): ITimeCard
+    }
+
+    class FileUtil {
+        + EMPLOYEE_HEADER: String
+        + PAY_STUB_HEADER: String
+        + readFileToList(file: String): List~String~
+        + writeFile(outFile: String, lines: List~String~): void
+        + writeFile(outFile: String, lines: List~String~, backup: boolean): void
+    }
+
+    class PayrollGenerator {
+        + main(args: String[]): void
+    }
+
+    class Arguments {
+        - employeeFile: String
+        - payrollFile: String
+        - timeCards: String
+        + getEmployeeFile(): String
+        + getPayrollFile(): String
+        + getTimeCards(): String
+        + printHelp(): void
+        + process(args: String[]): Arguments
+    }
+
+    class Employee {
+        <<abstract>>
+        -String name
+        -String id
+        -String employeeType
+        -double payRate
+        -double ytdEarnings
+        -double ytdTaxesPaid
+        -double pretaxDeductions
+        +Employee(String, String, double, double, double, double)
+        +getName(): String
+        +getID(): String
+        +getPayRate(): double
+        +getEmployeeType(): String
+        +setEmployeeType(String): void
+        +getYTDEarnings(): double
+        +getYTDTaxesPaid(): double
+        +getPretaxDeductions(): double
+        +runPayroll(double): IPayStub
+        +toCSV(): String
+        #calculateGrossPay(double): BigDecimal*
+    }
+
+    class HourlyEmployee {
+        +HourlyEmployee(String, String, double, double, double, double)
+        #calculateGrossPay(double): BigDecimal
+    }
+
+    class SalaryEmployee {
+        +SalaryEmployee(String, String, double, double, double, double)
+        #calculateGrossPay(double): BigDecimal
+    }
+
+    class PayStub {
+        -String name
+        -double netPay
+        -double taxes
+        -double ytdEarnings
+        -double ytdTaxesPaid
+        +PayStub(String, double, double, double, double)
+        +getName(): String
+        +getPay(): double
+        +getTaxesPaid(): double
+        +getYtdEarnings(): double
+        +getYtdTaxesPaid(): double
+        +toCSV(): String
+    }
+
+    class TimeCard {
+        -String employeeID
+        -double hoursWorked
+        +TimeCard(String, double)
+        +getEmployeeID(): String
+        +getHoursWorked(): double
+    }
+```
 
 
 
@@ -110,3 +235,13 @@ Go through your completed code, and update your class diagram to reflect the fin
 > The value of reflective writing has been highly researched and documented within computer science, from learning new information to showing higher salaries in the workplace. For this next part, we encourage you to take time, and truly focus on your retrospective.
 
 Take time to reflect on how your design has changed. Write in *prose* (i.e. do not bullet point your answers - it matters in how our brain processes the information). Make sure to include what were some major changes, and why you made them. What did you learn from this process? What would you do differently next time? What was the most challenging part of this process? For most students, it will be a paragraph or two. 
+
+I add an abstract Employee class which implements IEmployee. And then I add HourlyEmployee and SalaryEmployee to extend Employee class, which use IPayStub to generate new PayStub objects. I also implement IPayStub and ITimeCard to make the structure integrated.
+
+The reason why I add an abstract class is that there are many common properties and methods between HourlyEmployee and SalaryEmployee and only calculateGrossPay is different. Implementing an abstract class can make the code simpler and structure more organized.
+
+I learned that we could separate different functions of an application into different class, in order to make our codes more maintainable and bug free. Also implementing an abstract class between could avoid many repetitive codes.
+
+Next time I may use another helper class to do all the BigDecimal calculation to avoid the loss of data accuracy.
+
+The most challenging part was to figure out the structure of the abstract class at first. It did not occur to me that I could pass the employee type from the subclass and store it in the parent class. Also, dynamic binding to invoke method was a little confusing at first.
