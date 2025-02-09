@@ -1,69 +1,25 @@
 package student;
 
-public class HourlyEmployee implements IEmployee {
-    private String name;
-    private String id;
-    private final String employeeType = "Hourly";
-    private double payRate;
-    private double ytdEarnings;
-    private double ytdTaxesPaid;
-    private double pretaxDeductions;
+import java.math.BigDecimal;
 
-    public HourlyEmployee(String name, String id, double payRate, double ytdEarnings, double ytdTaxesPaid, double pretaxDeductions){
-        if (payRate < 0 || ytdEarnings < 0 || ytdTaxesPaid < 0 || pretaxDeductions < 0){
-            throw new IllegalArgumentException();
-        }
-        this.name = name;
-        this.id = id;
-        this.payRate = payRate;
-        this.ytdEarnings = ytdEarnings;
-        this.ytdTaxesPaid = ytdTaxesPaid;
-        this.pretaxDeductions = pretaxDeductions;
+public class HourlyEmployee extends Employee {
+    public HourlyEmployee(String name, String id, double payRate,
+                          double ytdEarnings, double ytdTaxesPaid,
+                          double pretaxDeductions) {
+        super(name, id,  payRate, ytdEarnings, ytdTaxesPaid, pretaxDeductions);
+        this.employeeType = "Hourly";
     }
 
     @Override
-    public String getName() {
-        return this.name;
-    }
+    protected BigDecimal calculateGrossPay(double hoursWorked) {
+        // separate working hours
+        BigDecimal regularHours = BigDecimal.valueOf(Math.min(40, hoursWorked));
+        BigDecimal overtimeHours = BigDecimal.valueOf(Math.max(hoursWorked - 40, 0));
+        // calculate two parts of pay
+        BigDecimal regularPay = regularHours.multiply(BigDecimal.valueOf(getPayRate()));
+        BigDecimal overtimePay = overtimeHours.multiply(BigDecimal.valueOf(getPayRate() * 1.5));
+        BigDecimal totalPay = regularPay.add(overtimePay);
 
-    @Override
-    public String getID() {
-        return this.id;
-    }
-
-    @Override
-    public double getPayRate() {
-        return this.payRate;
-    }
-
-    @Override
-    public String getEmployeeType() {
-        return this.employeeType;
-    }
-
-    @Override
-    public double getYTDEarnings() {
-        return this.ytdEarnings;
-    }
-
-    @Override
-    public double getYTDTaxesPaid() {
-        return this.ytdTaxesPaid;
-    }
-
-    @Override
-    public double getPretaxDeductions() {
-        return this.pretaxDeductions;
-    }
-
-    @Override
-    public IPayStub runPayroll(double hoursWorked) {
-        return null;
-    }
-
-    @Override
-    public String toCSV() {
-        return String.format("%s,%s,%s,%.2f,%.2f,%.2f,%.2f",
-                employeeType, name, id, payRate, pretaxDeductions, ytdEarnings, ytdTaxesPaid);
+        return totalPay;
     }
 }

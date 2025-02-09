@@ -1,6 +1,7 @@
 package student;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.LinkedList;
 
@@ -69,7 +70,32 @@ public final class PayrollGenerator {
         // as it is invalid, but if is 0, you still generate a paystub, but the amount is 0.
 
         //YOUR CODE HERE
-      
+        // Generate an ID-IEmployee map
+        Map<String, IEmployee> employeeMap = employees.stream().collect(Collectors.toMap(IEmployee::getID, e -> e));
+
+        // Iterate through the timeCard
+        for (ITimeCard timeCard : timeCardList) {
+            String employeeID = timeCard.getEmployeeID();
+            double hoursWorked = timeCard.getHoursWorked();
+
+            // Skip negative hoursWorked
+            if (hoursWorked < 0){
+                continue;
+            }
+
+            // Look up the Employee
+            IEmployee employee = employeeMap.get(employeeID);
+            if (employee == null) {
+                continue;
+            }
+
+            // Generate payStub
+            IPayStub payStub = employee.runPayroll(hoursWorked);
+            // Skip zero hoursWorked
+            if (payStub != null) {
+                payStubs.add(payStub);
+            }
+        }
 
          // now save out employees to a new file
 
