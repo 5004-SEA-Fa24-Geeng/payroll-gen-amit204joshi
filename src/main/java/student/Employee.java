@@ -66,22 +66,21 @@ public abstract class Employee implements IEmployee {
         }
 
         // Calculate Gross pay
-        BigDecimal grossPay = calculateGrossPay(hoursWorked).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal grossPay = calculateGrossPay(hoursWorked);
         // Calculate net before tax
         BigDecimal pretax = BigDecimal.valueOf(pretaxDeductions);
         BigDecimal netBeforeTax = grossPay.subtract(pretax);
         // Calculate the taxes
         BigDecimal taxRate = new BigDecimal("0.2265");
-        BigDecimal taxes = netBeforeTax.multiply(taxRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal taxes = netBeforeTax.multiply(taxRate);
         // Calculate net pay
-        BigDecimal netPay = netBeforeTax.subtract(taxes)
-                .setScale(2, RoundingMode.HALF_UP);
+        BigDecimal netPay = netBeforeTax.subtract(taxes);
 
         //update YTD value
-        this.ytdEarnings += grossPay.doubleValue();
-        this.ytdTaxesPaid += taxes.doubleValue();
+        this.ytdEarnings = BigDecimal.valueOf(this.ytdEarnings).add(netPay).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        this.ytdTaxesPaid = BigDecimal.valueOf(this.ytdTaxesPaid).add(taxes).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        return new PayStub(name, netPay.doubleValue(), taxes.doubleValue(), this.ytdEarnings, this.ytdTaxesPaid);
+        return new PayStub(name, netPay.setScale(2, RoundingMode.HALF_UP).doubleValue(), taxes.setScale(2, RoundingMode.HALF_UP).doubleValue(), this.ytdEarnings, this.ytdTaxesPaid);
     }
 
     protected abstract BigDecimal calculateGrossPay(double hoursWorked);
