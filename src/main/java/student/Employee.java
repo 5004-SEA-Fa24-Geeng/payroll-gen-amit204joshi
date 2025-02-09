@@ -109,7 +109,7 @@ public abstract class Employee implements IEmployee {
     }
 
     /**
-     * Set the employee type
+     * Set the employee type.
      *
      * @param employeeType the employee type to be set
      */
