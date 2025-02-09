@@ -22,7 +22,7 @@ public abstract class Employee implements IEmployee {
     /**
      * The type of employee.
      */
-    protected String employeeType;
+    private String employeeType;
 
     /**
      * The pay rate of the employee.
@@ -55,7 +55,8 @@ public abstract class Employee implements IEmployee {
      * @param pretaxDeductions the pre-tax deductions for the employee
      * @throws IllegalArgumentException if any of the numeric parameters are negative
      */
-    public Employee(String name, String id, double payRate, double ytdEarnings, double ytdTaxesPaid, double pretaxDeductions) {
+    public Employee(String name, String id, double payRate, double ytdEarnings,
+                    double ytdTaxesPaid, double pretaxDeductions) {
         if (payRate < 0 || ytdEarnings < 0 || ytdTaxesPaid < 0 || pretaxDeductions < 0) {
             throw new IllegalArgumentException("Negative values not allowed");
         }
@@ -108,6 +109,16 @@ public abstract class Employee implements IEmployee {
     }
 
     /**
+     * Set the employee type
+     *
+     * @param employeeType the employee type to be set
+     */
+
+    public void setEmployeeType(String employeeType) {
+        this.employeeType = employeeType;
+    }
+
+    /**
      * Returns the employee's year-to-date earnings.
      *
      * @return the year-to-date earnings
@@ -146,7 +157,7 @@ public abstract class Employee implements IEmployee {
     @Override
     public IPayStub runPayroll(double hoursWorked) {
         if (hoursWorked < 0) {
-            return null;
+            throw new IllegalArgumentException("Hours worked cannot be negative");
         }
 
         // Calculate gross pay based on the employee's specific compensation structure.

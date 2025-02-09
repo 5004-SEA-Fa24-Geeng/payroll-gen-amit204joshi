@@ -22,7 +22,7 @@ public class SalaryEmployee extends Employee {
                           double ytdEarnings, double ytdTaxesPaid,
                           double pretaxDeductions) {
         super(name, id, payRate, ytdEarnings, ytdTaxesPaid, pretaxDeductions);
-        this.employeeType = "SALARY";
+        setEmployeeType("SALARY");;
     }
 
     /**

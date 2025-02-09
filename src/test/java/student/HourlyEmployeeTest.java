@@ -35,6 +35,12 @@ class HourlyEmployeeTest {
     }
 
     @Test
+    void setEmployeeType() {
+        employee1.setEmployeeType("SALARY");
+        assertEquals("SALARY", employee1.getEmployeeType());
+    }
+
+    @Test
     void getYTDEarnings() {
         assertEquals(0, employee1.getYTDEarnings());
     }
